@@ -8,7 +8,7 @@ const cors = require('cors');
 require('dotenv').config();
 
 const { errors } = require('celebrate');
-const NotFoundError = require('./errors/NotFoundError');
+
 const router = require('./routes');
 
 const { PORT = 3000 } = process.env;
@@ -40,10 +40,6 @@ app.use(cors());
 app.use(limiter);
 
 app.use(router);
-
-app.use('*', (req, res, next) => {
-  next(new NotFoundError('Страница не  найдена'));
-});
 
 app.use(errors());
 
