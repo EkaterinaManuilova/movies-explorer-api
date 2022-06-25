@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-const validator = require('validator');
+
+const { reg } = require('../utils/constants');
 
 const movieSchema = new mongoose.Schema({
   country: {
@@ -25,17 +26,32 @@ const movieSchema = new mongoose.Schema({
   image: {
     type: String,
     required: [true, 'Обязательное поле'],
-    validate: [validator.isUrl, 'Не правильно указана ссылка'],
+    validate: {
+      validator(v) {
+        return reg.test(v);
+      },
+      message: 'Не правильно указана ссылка',
+    },
   },
   trailerLink: {
     type: String,
     required: [true, 'Обязательное поле'],
-    validate: [validator.isUrl, 'Не правильно указана ссылка'],
+    validate: {
+      validator(v) {
+        return reg.test(v);
+      },
+      message: 'Не правильно указана ссылка',
+    },
   },
   thumbnail: {
     type: String,
     required: [true, 'Обязательное поле'],
-    validate: [validator.isUrl, 'Не правильно указана ссылка'],
+    validate: {
+      validator(v) {
+        return reg.test(v);
+      },
+      message: 'Не правильно указана ссылка',
+    },
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
