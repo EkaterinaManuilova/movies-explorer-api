@@ -1,9 +1,9 @@
 const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
+const { createUser, loginUser } = require('../controllers/users');
 const userRouter = require('./users');
 const movieRouter = require('./movies');
 const auth = require('../middlewares/auth');
-const { createUser, loginUser } = require('../controllers/users');
 const NotFoundError = require('../errors/NotFoundError');
 
 router.post('/signup', celebrate({
@@ -13,7 +13,8 @@ router.post('/signup', celebrate({
     password: Joi.string().required().min(6),
   }),
 }), createUser);
-router('/signin', celebrate({
+
+router.post('/signin', celebrate({
   body: Joi.object().keys({
     email: Joi.string().email({ minDomainSegments: 2 }).required(),
     password: Joi.string().required().min(6),
@@ -23,7 +24,7 @@ router('/signin', celebrate({
 router.use('/users', auth, userRouter);
 router.use('/movies', auth, movieRouter);
 
-router.use('*', (req, res, next) => {
+router.use((req, res, next) => {
   next(new NotFoundError('Страница не  найдена'));
 });
 

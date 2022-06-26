@@ -16,7 +16,7 @@ const movieSchema = new mongoose.Schema({
     required: [true, 'Обязательное поле'],
   },
   year: {
-    typr: String,
+    type: String,
     required: [true, 'Обязательное поле'],
   },
   description: {
