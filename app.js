@@ -1,4 +1,3 @@
-require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
@@ -9,6 +8,7 @@ const { errors } = require('celebrate');
 
 const { createUser, loginUser } = require('./controllers/users');
 const { createUserValidation, loginUserValidation } = require('./middlewares/validations');
+const { corsOptions, MONGO_URL, PORT } = require('./utils/config');
 
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const errorHandler = require('./middlewares/errorHandler');
@@ -16,14 +16,7 @@ const limiter = require('./middlewares/limiter');
 
 const router = require('./routes');
 
-const { PORT = 3001 } = process.env;
 const app = express();
-
-const corsOptions = {
-  origin: '*',
-  credentials: true,
-  optionSuccessStatus: 200,
-};
 
 app.use(cors(corsOptions));
 
@@ -33,7 +26,7 @@ app.use(cookieParser());
 
 app.use(express.json());
 
-mongoose.connect('mongodb://localhost:27017/bitfilmsdb');
+mongoose.connect(MONGO_URL);
 
 app.use(cors());
 
