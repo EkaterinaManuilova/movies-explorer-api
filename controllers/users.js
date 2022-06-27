@@ -68,10 +68,10 @@ module.exports.getMyProfile = (req, res, next) => {
 };
 
 module.exports.updateMyProfile = (req, res, next) => {
-  const { name, about } = req.body;
+  const { name, email } = req.body;
   User.findByIdAndUpdate(
     req.user._id,
-    { name, about },
+    { name, email },
     {
       new: true,
       runValidators: true,

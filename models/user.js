@@ -13,7 +13,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Обязательное поле'],
     select: false,
-    minlength: [6, 'Пароль должен содержать не менее 6-ти символов'],
   },
   name: {
     type: String,
