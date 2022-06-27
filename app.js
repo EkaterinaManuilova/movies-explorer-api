@@ -3,25 +3,21 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
 const cors = require('cors');
 
 const { errors } = require('celebrate');
-const { celebrate, Joi } = require('celebrate');
+
 const { createUser, loginUser } = require('./controllers/users');
+const { createUserValidation, loginUserValidation } = require('./middlewares/validations');
 
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const errorHandler = require('./middlewares/errorHandler');
+const limiter = require('./middlewares/limiter');
 
 const router = require('./routes');
 
 const { PORT = 3001 } = process.env;
 const app = express();
-
-const limiter = rateLimit({
-  windowMS: 15 * 60 * 1000,
-  max: 100,
-});
 
 const corsOptions = {
   origin: '*',
@@ -44,20 +40,10 @@ app.use(cors());
 app.use(requestLogger);
 
 app.use(limiter);
-app.post('/signup', celebrate({
-  body: Joi.object().keys({
-    name: Joi.string().min(2).max(30),
-    email: Joi.string().required().email({ minDomainSegments: 2 }),
-    password: Joi.string().required(),
-  }),
-}), createUser);
 
-app.post('/signin', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required().email({ minDomainSegments: 2 }),
-    password: Joi.string().required(),
-  }),
-}), loginUser);
+app.post('/signup', createUserValidation, createUser);
+
+app.post('/signin', loginUserValidation, loginUser);
 
 app.use(router);
 
