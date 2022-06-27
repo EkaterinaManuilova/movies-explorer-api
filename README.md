@@ -1,5 +1,5 @@
 # Бэкенд для сервиса по поиску фильмов movies-explorer-api 
-Домен сервера: api.movies-explorer-club.nomoredomains.xyz
+[Домен сервера:] (https://api.movies-explorer-club.nomoredomains.xyz)
 API для аутентификации пользователей и сохранения фильмов.
 
 Созданы схемы и модели ресурсов API:
