@@ -4,7 +4,7 @@ const {
   getMyProfile,
   updateMyProfile,
 } = require('../controllers/users');
-const updateMyProfileValidation = require('../middlewares/validations');
+const { updateMyProfileValidation } = require('../middlewares/validations');
 
 userRouter.get('/me', getMyProfile);
 
