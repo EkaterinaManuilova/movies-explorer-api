@@ -6,6 +6,5 @@ module.exports.corsOptions = {
   optionSuccessStatus: 200,
 };
 
-const MONGO_URL = 'mongodb://localhost:27017/bitfilmsdb';
-const { PORT = 3001 } = process.env;
+const { PORT = 3001, MONGO_URL = 'mongodb://localhost:27017/moviesdb' } = process.env;
 module.exports = { PORT, MONGO_URL };

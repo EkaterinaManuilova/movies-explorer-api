@@ -8,14 +8,22 @@ const UnauthorizedError = require('../errors/UnauthorizedError');
 const ValidationError = require('../errors/ValidationError');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
+const {
+  secretKey,
+  notFoundData,
+  incorrectData,
+  mongoDuplicateKey,
+  incorrectEmailOrPass,
+  userNotFound,
+} = require('../utils/constants');
 
 module.exports.createUser = (req, res, next) => {
   const {
-    email, password, name,
+    name, email, password,
   } = req.body;
 
-  if (!email || !password) {
-    return next(new CastError('Не передан email и/или пароль'));
+  if (!name || !email || !password) {
+    return next(new CastError(notFoundData));
   }
   return bcrypt.hash(password, 10)
     .then((hash) => User.create({
@@ -26,7 +34,7 @@ module.exports.createUser = (req, res, next) => {
     }))
     .catch((err) => {
       if (err.code === 11000) {
-        next(new ConflictError('Такой пользователь уже существует'));
+        next(new ConflictError(mongoDuplicateKey));
       } else {
         next(err);
       }
@@ -40,13 +48,13 @@ module.exports.loginUser = (req, res, next) => {
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
-        NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
+        NODE_ENV === 'production' ? JWT_SECRET : secretKey,
         { expiresIn: '7d' },
       );
       res.send({ token });
     })
     .catch(() => {
-      next(new UnauthorizedError('Не правильные почта или пароль'));
+      next(new UnauthorizedError(incorrectEmailOrPass));
     });
 };
 
@@ -54,13 +62,13 @@ module.exports.getMyProfile = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
       if (!user) {
-        return next(new NotFoundError('Пользователь не найден'));
+        return next(new NotFoundError(userNotFound));
       }
-      return res.status(200).send(user);
+      return res.send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new CastError('Невалидный id'));
+        next(new CastError(incorrectData));
       } else {
         next(err);
       }
@@ -79,13 +87,15 @@ module.exports.updateMyProfile = (req, res, next) => {
   )
     .then((user) => {
       if (!user) {
-        return next(new NotFoundError('Пользователь не найден'));
+        return next(new NotFoundError(userNotFound));
       }
-      return res.status(200).send(user);
+      return res.send(user);
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new ValidationError('Переданы некорректные данные'));
+      if (err.name === ('ValidationError' || 'CastError')) {
+        next(new ValidationError(incorrectData));
+      } else if (err.code === 11000) {
+        next(new ConflictError(mongoDuplicateKey));
       } else {
         next(err);
       }

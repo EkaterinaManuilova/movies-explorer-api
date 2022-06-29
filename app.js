@@ -5,18 +5,21 @@ const helmet = require('helmet');
 const cors = require('cors');
 
 const { errors } = require('celebrate');
-
-const { createUser, loginUser } = require('./controllers/users');
-const { createUserValidation, loginUserValidation } = require('./middlewares/validations');
 const { corsOptions, MONGO_URL, PORT } = require('./utils/config');
 
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const errorHandler = require('./middlewares/errorHandler');
 const limiter = require('./middlewares/limiter');
 
-const router = require('./routes');
+const router = require('./routes/index');
 
 const app = express();
+
+mongoose.connect(MONGO_URL, { useNewUrlParser: true });
+
+app.use(requestLogger);
+
+app.use(limiter);
 
 app.use(cors(corsOptions));
 
@@ -26,17 +29,7 @@ app.use(cookieParser());
 
 app.use(express.json());
 
-mongoose.connect(MONGO_URL);
-
 app.use(cors());
-
-app.use(requestLogger);
-
-app.use(limiter);
-
-app.post('/signup', createUserValidation, createUser);
-
-app.post('/signin', loginUserValidation, loginUser);
 
 app.use(router);
 
