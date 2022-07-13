@@ -2,7 +2,6 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const NotFoundError = require('../errors/NotFoundError');
-const CastError = require('../errors/CastError');
 const ConflictError = require('../errors/ConflictError');
 const UnauthorizedError = require('../errors/UnauthorizedError');
 const ValidationError = require('../errors/ValidationError');
@@ -10,7 +9,6 @@ const ValidationError = require('../errors/ValidationError');
 const { NODE_ENV, JWT_SECRET } = process.env;
 const {
   secretKey,
-  notFoundData,
   incorrectData,
   mongoDuplicateKey,
   incorrectEmailOrPass,
@@ -22,10 +20,7 @@ module.exports.createUser = (req, res, next) => {
     name, email, password,
   } = req.body;
 
-  if (!name || !email || !password) {
-    return next(new CastError(notFoundData));
-  }
-  return bcrypt.hash(password, 10)
+  bcrypt.hash(password, 10)
     .then((hash) => User.create({
       name, email, password: hash,
     }))
@@ -66,13 +61,7 @@ module.exports.getMyProfile = (req, res, next) => {
       }
       return res.send(user);
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new CastError(incorrectData));
-      } else {
-        next(err);
-      }
-    });
+    .catch((err) => next(err));
 };
 
 module.exports.updateMyProfile = (req, res, next) => {
