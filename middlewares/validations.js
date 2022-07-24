@@ -6,14 +6,14 @@ const { incorrectUrl } = require('../utils/constants');
 module.exports.createUserValidation = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
-    email: Joi.string().required().email({ minDomainSegments: 2 }),
+    email: Joi.string().required().email(),
     password: Joi.string().required(),
   }),
 });
 
 module.exports.loginUserValidation = celebrate({
   body: Joi.object().keys({
-    email: Joi.string().required().email({ minDomainSegments: 2 }),
+    email: Joi.string().required().email(),
     password: Joi.string().required(),
   }),
 });
@@ -21,7 +21,7 @@ module.exports.loginUserValidation = celebrate({
 module.exports.updateMyProfileValidation = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30).required(),
-    email: Joi.string().email({ minDomainSegments: 2 }).required(),
+    email: Joi.string().email().required(),
   }),
 });
 
