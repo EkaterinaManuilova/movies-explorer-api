@@ -1,19 +1,29 @@
 const { celebrate, Joi } = require('celebrate');
 const validator = require('validator');
 
-const { incorrectUrl } = require('../utils/constants');
+const { incorrectUrl, incorrectEmail } = require('../utils/constants');
 
 module.exports.createUserValidation = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
-    email: Joi.string().required().email(),
+    email: Joi.string().required().custom((value, helpers) => {
+      if (validator.isEmail(value)) {
+        return value;
+      }
+      return helpers.message(incorrectEmail);
+    }),
     password: Joi.string().required(),
   }),
 });
 
 module.exports.loginUserValidation = celebrate({
   body: Joi.object().keys({
-    email: Joi.string().required().email(),
+    email: Joi.string().required().custom((value, helpers) => {
+      if (validator.isEmail(value)) {
+        return value;
+      }
+      return helpers.message(incorrectEmail);
+    }),
     password: Joi.string().required(),
   }),
 });
@@ -21,7 +31,12 @@ module.exports.loginUserValidation = celebrate({
 module.exports.updateMyProfileValidation = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30).required(),
-    email: Joi.string().email().required(),
+    email: Joi.string().required().custom((value, helpers) => {
+      if (validator.isEmail(value)) {
+        return value;
+      }
+      return helpers.message(incorrectEmail);
+    }),
   }),
 });
 
